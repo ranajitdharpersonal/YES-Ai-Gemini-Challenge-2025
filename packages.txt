@@ -1,6 +1,0 @@
-streamlit
-google-generativeai
-python-dotenv
-requests
-sympy
-google-search-results
