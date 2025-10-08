@@ -1,8 +1,5 @@
-requirements.txt
+requirements.txt - Final Streamlit Dependencies
 streamlit
 google-genai
 requests
 python-dotenv
-cryptography # bcrypt-er dependency issue fix korar jonno
-bcrypt
-sqlalchemy

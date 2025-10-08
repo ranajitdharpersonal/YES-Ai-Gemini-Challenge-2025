@@ -1,12 +1,11 @@
-# app.py
-# FINAL VERSION: Streamlit App with Integrated Gemini Logic and All Page Definitions
+#app.py
 
 import streamlit as st
 import google.generativeai as genai
 
 # Apnar ei file gulo oboshyo-i project-e thakte hobe:
 import database as db 
-from tools.email_tool import send_otp_email
+from tools.email_tool import send_otp_email 
 
 # --- Tool Imports (From 'tools' folder) ---
 from tools.weather_tool import get_weather
