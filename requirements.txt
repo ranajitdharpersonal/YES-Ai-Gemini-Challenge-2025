@@ -1,4 +1,3 @@
-requirements.txt - Final Streamlit Dependencies
 streamlit
 google-genai
 requests
