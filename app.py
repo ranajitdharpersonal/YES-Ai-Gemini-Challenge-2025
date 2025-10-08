@@ -1,5 +1,6 @@
 import streamlit as st
-from google import genai
+import google.generativeai as genai
+
 
 # NOTE: Database/Authentication imports are removed because external dependencies 
 # like bcrypt/sqlalchemy are failing compilation on Streamlit Cloud, preventing deployment.
