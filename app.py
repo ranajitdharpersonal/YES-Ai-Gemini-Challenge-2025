@@ -14,7 +14,7 @@ from tools.research_tool import deep_research
 # -- Page Configuration --
 st.set_page_config(
     page_title="YES Ai - By Ranajit Dhar",
-    page_icon="static/yes_ai_avatar.png",
+    #page_icon="static/yes_ai_avatar.png",
     layout="centered"
 )
 
@@ -27,7 +27,7 @@ if 'gemini_configured' not in st.session_state:
         st.session_state.gemini_configured = True
         
         st.session_state.model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
+            model_name="gemini-2.0-flash",
             tools=[get_weather, solve_math, get_latest_news, deep_research],
             system_instruction="""You are YES Ai, a helpful AI assistant created by Ranajit Dhar.
 - Your primary goal is to assist users by accurately using the tools you have been given.
