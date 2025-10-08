@@ -25,40 +25,48 @@ Our agent combines multiple tools to deliver smart, accurate, and multi-lingual 
 
 ---
 
-🛠 Tech Stack
-AI Core: Google Gemini-2.5-Flash
+## 🛠 Tech Stack
+- **AI Core:** Google Gemini-2.5-Flash
+- **Frontend/Backend:** Python / Streamlit
+- **Authentication:** Custom Login System (bcrypt, Email OTP)
+- **Deployment:** Streamlit Cloud
 
-Frontend/Backend: Python / Streamlit
+---
 
-Authentication: Custom Login System (bcrypt, Email OTP)
+## 🔗 Live Demo & Setup
 
-Deployment: Streamlit Cloud
+| Resource | Link |
+| :--- | :--- |
+| **Live Demo URL** | [Streamlit App URL will be here after successful deployment] |
+| **GitHub Repository** | [Your GitHub Repository URL will be here] |
 
-🔗 Live Demo & Setup
-Resource
+### 💻 Local Setup Instructions
 
-Link
+1.  **Clone the repository:**
+    ```bash
+    git clone [https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git](https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git)
+    cd YES-Ai-Gemini-Challenge-2025
+    ```
 
-Live Demo URL
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-[Streamlit App URL will be here after successful deployment]
+3.  **Set up Secrets:** Create a `secrets.toml` file with all necessary API keys (GEMINI_API_KEY, OPENWEATHER_API_KEY, etc.).
 
-GitHub Repository
+4.  **Run the app:**
+    ```bash
+    streamlit run app.py
+    ```
 
-[Your GitHub Repository URL will be here]
 
-💻 Local Setup Instructions
-Clone the repository:
+### ✨ Final Action
 
-git clone [https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git](https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git)
-cd YES-Ai-Gemini-Challenge-2025
+1.  GitHub-e **`README.md`** file-er niche-er section-ta uper-er code diye **replace** korun.
+2.  **`Commit changes`** button-e click korun.
 
-Install dependencies:
+Ekhon apnar **`README.md`** file-ta **shundor** ebong **professional** bhabe dekha jabe. **Apnar Stage 1 (Deployment Setup) o Stage 2 (Documentation) er shob kaaj shesh!** 🥳
 
-pip install -r requirements.txt
-
-Set up Secrets: Create a secrets.toml file with all necessary API keys (GEMINI_API_KEY, OPENWEATHER_API_KEY, etc.).
-
-Run the app:
-
+Ebar amader **Stage 3: Video Demo Toiri Kora** niye kotha bolte hobe. Apni ki video recording guide niye shuru korte ready?
 streamlit run app.py
