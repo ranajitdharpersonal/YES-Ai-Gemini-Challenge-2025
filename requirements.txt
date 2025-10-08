@@ -3,4 +3,5 @@ google-generativeai
 python-dotenv
 requests
 sympy
+bcrypt
 google-search-results

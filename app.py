@@ -1,10 +1,14 @@
+# app.py Final Import Setup (Top Section)
+
 import streamlit as st
 import google.generativeai as genai
+# Note: We are using direct import, hence using the 'google.generativeai' package
 
-
-# NOTE: Database/Authentication imports are removed because external dependencies 
-# like bcrypt/sqlalchemy are failing compilation on Streamlit Cloud, preventing deployment.
-# We are prioritizing the Core Gemini Chat functionality for successful submission deployment.
+# Apnar ei file gulo oboshyo-i project-e thakte hobe:
+# Note: These lines were commented out previously to avoid the bcrypt error.
+# Now we are keeping them as they were in your original successful app.
+import database as db 
+from tools.email_tool import send_otp_email 
 
 # --- Tool Imports (From 'tools' folder) ---
 from tools.weather_tool import get_weather
