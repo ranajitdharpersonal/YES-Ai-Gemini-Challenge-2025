@@ -1,5 +1,6 @@
 streamlit
-google-genai
-requests
+google-generativeai
 python-dotenv
+requests
 sympy
+google-search-results
