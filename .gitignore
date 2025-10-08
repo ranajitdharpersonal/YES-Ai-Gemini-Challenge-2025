@@ -1,0 +1,17 @@
+# .gitignore
+# Created to secure sensitive keys and unnecessary local files from GitHub.
+
+# 1. API KEY & CONFIGURATION FILES (MUST NOT BE PUBLIC)
+.env
+.streamlit/secrets.toml
+service_account_key.json
+
+# 2. PYTHON ENVIRONMENT/CACHE FILES (Local files not needed for deployment)
+__pycache__/
+venv/
+.ipynb_checkpoints/
+*.pyc
+
+# 3. DATABASE FILE (SQLite/Local DB files)
+# users.db is your actual database file name
+*.db
