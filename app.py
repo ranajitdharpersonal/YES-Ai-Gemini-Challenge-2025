@@ -1,5 +1,5 @@
 import streamlit as st
-import google.generativeai as genai
+from google import genai
 
 # NOTE: Database/Authentication imports are removed because external dependencies 
 # like bcrypt/sqlalchemy are failing compilation on Streamlit Cloud, preventing deployment.
@@ -100,6 +100,7 @@ def show_chat_page():
         **About YES Ai** This is a Powerful multi-talented AI Chatbot created by **Ranajit Dhar**. 
         
         **Capabilities:** 
+        
         - Deep Research🔎
         - General Conversation😄 (English, Bengali, Hindi)
         - Real-time Weather⛅️
