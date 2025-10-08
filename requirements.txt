@@ -1,4 +1,8 @@
+requirements.txt
 streamlit
+
+Duto naam-i dewa holo jeno kono shomossha na hoy:
+google-generativeai
 google-genai
 requests
 bcrypt
