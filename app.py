@@ -14,7 +14,7 @@ from tools.research_tool import deep_research
 # -- Page Configuration --
 st.set_page_config(
     page_title="YES Ai - By Ranajit Dhar",
-    #page_icon="static/yes_ai_avatar.png",
+    page_icon="static/yes_ai_avatar.png",
     layout="centered"
 )
 
@@ -103,7 +103,7 @@ def show_login_page():
     """Login page-er UI toiri kore ebong handle kore."""
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        #st.image("static/yes_ai_logo_main.png", width=400)
+        st.image("static/yes_ai_logo_main.png", width=400)
         st.title("Welcome! 😍")
     
     with st.form("login_form"):
@@ -133,7 +133,7 @@ def show_signup_page():
     """Signup page-er UI toiri kore ebong handle kore."""
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
-        #st.image("static/yes_ai_logo_main.png", width=400)
+        st.image("static/yes_ai_logo_main.png", width=400)
         st.title("Create Account")
 
     with st.form("signup_form"):
