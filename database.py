@@ -1,134 +1,125 @@
+# database.py
+
 import sqlite3
 import bcrypt
+from datetime import datetime
 
 DATABASE_NAME = "users.db"
 
+# --- Database Connection ---
 def get_db_connection():
-    """Database connection toiri kore ebong return kore."""
+    """Returns a connection to the SQLite database."""
     conn = sqlite3.connect(DATABASE_NAME)
     conn.row_factory = sqlite3.Row
     return conn
 
-# --- (baki shob function jemon chilo temon-i ache) ---
-# ...
-# ...
-# ... (add_user, check_user, etc.)
-def initialize_database():
-    """Database'e dorkari table gulo toiri kore."""
+# --- Initialization Function ---
+def check_db_exists():
+    """Checks if the 'users' table exists and creates it if it doesn't."""
     conn = get_db_connection()
     cursor = conn.cursor()
-    
-    # User table with password as BLOB
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        username TEXT UNIQUE NOT NULL,
-        email TEXT UNIQUE NOT NULL,
-        password BLOB NOT NULL
-    )
-    """)
-    
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS chat_history (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        user_id INTEGER NOT NULL,
-        role TEXT NOT NULL,
-        content TEXT NOT NULL,
-        timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-        FOREIGN KEY (user_id) REFERENCES users (id)
-    )
-    """)
-    
-    conn.commit()
-    conn.close()
-    print("Database tables created successfully.")
-
-def add_user(username, email, password):
-    """Notun user'ke database-e add kore."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    # Password'ke secure vabe hash kora hocche (eta already bytes return kore)
-    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     
     try:
-        cursor.execute("INSERT INTO users (username, email, password) VALUES (?, ?, ?)", 
-                       (username, email, hashed_password))
-        conn.commit()
-        return True
-    except sqlite3.IntegrityError:
-        return False
+        # Check if the table exists
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+        if cursor.fetchone() is None:
+            # Table does not exist, so create it
+            cursor.execute("""
+                CREATE TABLE users (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    username TEXT NOT NULL UNIQUE,
+                    email TEXT NOT NULL UNIQUE,
+                    password_hash TEXT NOT NULL,
+                    created_at TIMESTAMP
+                )
+            """)
+            conn.commit()
+            print("Database: 'users' table created successfully.")
+        
+    except sqlite3.Error as e:
+        print(f"Database Error during check/creation: {e}")
     finally:
         conn.close()
 
+# --- User Management Functions ---
+
+def add_user(username, email, password):
+    """Adds a new user to the database."""
+    check_db_exists() # Ensure table exists before inserting
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Hash the password
+        password_bytes = password.encode('utf-8')
+        password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
+        
+        cursor.execute(
+            "INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)",
+            (username, email, password_hash, datetime.now())
+        )
+        conn.commit()
+        conn.close()
+        return True
+    except sqlite3.IntegrityError:
+        # Email or username already exists
+        conn.close()
+        return False
+    except Exception as e:
+        print(f"Error adding user: {e}")
+        conn.close()
+        return False
+
+def check_email_exists(email):
+    """Checks if an email is already registered."""
+    check_db_exists() # Ensure table exists
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT email FROM users WHERE email = ?", (email,))
+    user = cursor.fetchone()
+    conn.close()
+    return user is not None
+
 def check_user(email, password):
-    """User'er email o password check kore."""
+    """Checks user credentials for login."""
+    check_db_exists() # Ensure table exists
     conn = get_db_connection()
     cursor = conn.cursor()
     
+    # Check by email first
     cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
     user = cursor.fetchone()
     conn.close()
     
-    # Ekhon user['password'] already bytes, tai ar kono change dorkar nei
-    if user and bcrypt.checkpw(password.encode('utf-8'), user['password']):
-        return user
+    if user:
+        # Verify the password
+        password_hash = user['password_hash'].encode('utf-8')
+        if bcrypt.checkpw(password.encode('utf-8'), password_hash):
+            return user
+    
     return None
 
-def save_message(user_id, role, content):
-    """Chat message'ke database-e save kore."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("INSERT INTO chat_history (user_id, role, content) VALUES (?, ?, ?)", 
-                   (user_id, role, content))
-    conn.commit()
-    conn.close()
-
-def load_history(user_id):
-    """Ekjon user'er purono chat history load kore."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    
-    cursor.execute("SELECT role, content FROM chat_history WHERE user_id = ? ORDER BY timestamp ASC", (user_id,))
-    history = cursor.fetchall()
-    conn.close()
-    return history
-
-def clear_history(user_id):
-    """Ekjon user'er shob chat history database theke delete kore dey."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("DELETE FROM chat_history WHERE user_id = ?", (user_id,))
-    conn.commit()
-    conn.close()
-    print(f"Chat history cleared for user_id: {user_id}")
-    return True
-
-# --- NOTUN FUNCTION ADD KORA HOLO ---
-
-def check_email_exists(email):
-    """Check kore je kono email aage thekei registered ache kina."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
-    user_exists = cursor.fetchone()
-    conn.close()
-    return user_exists is not None
-
 def update_password(email, new_password):
-    """Ekjon user'er password database-e update kore."""
-    conn = get_db_connection()
-    cursor = conn.cursor()
-    hashed_password = bcrypt.hashpw(new_password.encode('utf-8'), bcrypt.gensalt())
+    """Updates the user's password."""
+    check_db_exists() # Ensure table exists
     try:
-        cursor.execute("UPDATE users SET password = ? WHERE email = ?", (hashed_password, email))
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Hash the new password
+        password_bytes = new_password.encode('utf-8')
+        password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
+        
+        cursor.execute(
+            "UPDATE users SET password_hash = ?, created_at = ? WHERE email = ?",
+            (password_hash, datetime.now(), email)
+        )
         conn.commit()
+        conn.close()
         return True
     except Exception as e:
         print(f"Error updating password: {e}")
         return False
-    finally:
-        conn.close()
 
-if __name__ == "__main__":
-    initialize_database()
-
+# NOTE: You must call check_db_exists() once at the start of your app
+# or rely on it being called before any other DB operation.
