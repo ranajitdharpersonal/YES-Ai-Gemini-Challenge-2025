@@ -15,15 +15,14 @@ def get_db_connection():
 
 # --- Initialization Function ---
 def check_db_exists():
-    """Checks if the 'users' table exists and creates it if it doesn't."""
+    """Checks if the necessary tables exist and creates them if they don't."""
     conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
-        # Check if the table exists
+        # 1. Create Users Table (for Login)
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
         if cursor.fetchone() is None:
-            # Table does not exist, so create it
             cursor.execute("""
                 CREATE TABLE users (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -33,15 +32,30 @@ def check_db_exists():
                     created_at TIMESTAMP
                 )
             """)
-            conn.commit()
-            print("Database: 'users' table created successfully.")
-        
+            print("Database: 'users' table created.")
+
+        # 2. Create Chat History Table
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='chat_history'")
+        if cursor.fetchone() is None:
+            cursor.execute("""
+                CREATE TABLE chat_history (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL,
+                    role TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    timestamp TIMESTAMP,
+                    FOREIGN KEY(user_id) REFERENCES users(id)
+                )
+            """)
+            print("Database: 'chat_history' table created.")
+            
+        conn.commit()
     except sqlite3.Error as e:
         print(f"Database Error during check/creation: {e}")
     finally:
         conn.close()
 
-# --- User Management Functions ---
+# --- User Management Functions (Remaining functions are kept) ---
 
 def add_user(username, email, password):
     """Adds a new user to the database."""
@@ -62,7 +76,6 @@ def add_user(username, email, password):
         conn.close()
         return True
     except sqlite3.IntegrityError:
-        # Email or username already exists
         conn.close()
         return False
     except Exception as e:
@@ -72,7 +85,7 @@ def add_user(username, email, password):
 
 def check_email_exists(email):
     """Checks if an email is already registered."""
-    check_db_exists() # Ensure table exists
+    check_db_exists()
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT email FROM users WHERE email = ?", (email,))
@@ -82,17 +95,15 @@ def check_email_exists(email):
 
 def check_user(email, password):
     """Checks user credentials for login."""
-    check_db_exists() # Ensure table exists
+    check_db_exists()
     conn = get_db_connection()
     cursor = conn.cursor()
     
-    # Check by email first
     cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
     user = cursor.fetchone()
     conn.close()
     
     if user:
-        # Verify the password
         password_hash = user['password_hash'].encode('utf-8')
         if bcrypt.checkpw(password.encode('utf-8'), password_hash):
             return user
@@ -101,12 +112,11 @@ def check_user(email, password):
 
 def update_password(email, new_password):
     """Updates the user's password."""
-    check_db_exists() # Ensure table exists
+    check_db_exists()
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Hash the new password
         password_bytes = new_password.encode('utf-8')
         password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
         
@@ -121,5 +131,46 @@ def update_password(email, new_password):
         print(f"Error updating password: {e}")
         return False
 
-# NOTE: You must call check_db_exists() once at the start of your app
-# or rely on it being called before any other DB operation.
+# --- Chat History Functions (NEWLY ADDED) ---
+
+def save_message(user_id, role, content):
+    """Saves a message to the chat history."""
+    check_db_exists() # Ensure tables exist
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute(
+            "INSERT INTO chat_history (user_id, role, content, timestamp) VALUES (?, ?, ?, ?)",
+            (user_id, role, content, datetime.now())
+        )
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error saving message: {e}")
+        return False
+
+def load_history(user_id):
+    """Loads all chat messages for a specific user."""
+    check_db_exists() # Ensure tables exist
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    # Ordering by ID ensures chronological order
+    cursor.execute("SELECT role, content FROM chat_history WHERE user_id = ? ORDER BY id", (user_id,))
+    history = cursor.fetchall()
+    conn.close()
+    return history
+
+def clear_history(user_id):
+    """Deletes all chat messages for a specific user."""
+    check_db_exists() # Ensure tables exist
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM chat_history WHERE user_id = ?", (user_id,))
+        conn.commit()
+        conn.close()
+        return True
+    except Exception as e:
+        print(f"Error clearing history: {e}")
+        return False
