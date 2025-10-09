@@ -32,8 +32,7 @@ def check_db_exists():
                     created_at TIMESTAMP
                 )
             """)
-            print("Database: 'users' table created.")
-
+        
         # 2. Create Chat History Table
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='chat_history'")
         if cursor.fetchone() is None:
@@ -47,7 +46,6 @@ def check_db_exists():
                     FOREIGN KEY(user_id) REFERENCES users(id)
                 )
             """)
-            print("Database: 'chat_history' table created.")
             
         conn.commit()
     except sqlite3.Error as e:
@@ -55,7 +53,7 @@ def check_db_exists():
     finally:
         conn.close()
 
-# --- User Management Functions (Remaining functions are kept) ---
+# --- User Management Functions ---
 
 def add_user(username, email, password):
     """Adds a new user to the database."""
@@ -131,11 +129,11 @@ def update_password(email, new_password):
         print(f"Error updating password: {e}")
         return False
 
-# --- Chat History Functions (NEWLY ADDED) ---
+# --- Chat History Functions (FULL IMPLEMENTATION) ---
 
 def save_message(user_id, role, content):
     """Saves a message to the chat history."""
-    check_db_exists() # Ensure tables exist
+    check_db_exists() 
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -152,10 +150,9 @@ def save_message(user_id, role, content):
 
 def load_history(user_id):
     """Loads all chat messages for a specific user."""
-    check_db_exists() # Ensure tables exist
+    check_db_exists() 
     conn = get_db_connection()
     cursor = conn.cursor()
-    # Ordering by ID ensures chronological order
     cursor.execute("SELECT role, content FROM chat_history WHERE user_id = ? ORDER BY id", (user_id,))
     history = cursor.fetchall()
     conn.close()
@@ -163,7 +160,8 @@ def load_history(user_id):
 
 def clear_history(user_id):
     """Deletes all chat messages for a specific user."""
-    check_db_exists() # Ensure tables exist
+    # Eitai sei missing function ja app.py call korchilo!
+    check_db_exists() 
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -173,4 +171,4 @@ def clear_history(user_id):
         return True
     except Exception as e:
         print(f"Error clearing history: {e}")
-        return False
+        return Falsev
