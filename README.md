@@ -37,7 +37,7 @@ Our agent combines multiple tools to deliver smart, accurate, and multi-lingual 
 
 | Resource | Link |
 | :--- | :--- |
-| **Live Demo URL** | [Streamlit App URL will be here after successful deployment] |
+| **Live Demo URL** | https://yesai-ranajitdhar.streamlit.app |
 | **GitHub Repository** | https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git |
 
 ### 💻 Local Setup Instructions
