@@ -14,13 +14,15 @@ def get_db_connection():
     return conn
 
 # --- Initialization Function ---
+# database.py - check_db_exists function (Final Version)
+
 def check_db_exists():
-    """Checks if the necessary tables exist and creates them if they don't."""
+    """Checks if the necessary tables exist, creates them, and ensures a demo user exists."""
     conn = get_db_connection()
     cursor = conn.cursor()
     
     try:
-        # 1. Create Users Table (for Login)
+        # 1. Create Users Table (if not exists)
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
         if cursor.fetchone() is None:
             cursor.execute("""
@@ -32,8 +34,8 @@ def check_db_exists():
                     created_at TIMESTAMP
                 )
             """)
-        
-        # 2. Create Chat History Table
+
+        # 2. Create Chat History Table (if not exists)
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='chat_history'")
         if cursor.fetchone() is None:
             cursor.execute("""
@@ -47,11 +49,28 @@ def check_db_exists():
                 )
             """)
             
+        # 3. Create Permanent Demo User (The Fix for 'Sleep' Problem)
+        # Only create if the email 'demo@yesai.com' does NOT exist
+        cursor.execute("SELECT id FROM users WHERE email = 'demo@yesai.com'")
+        if cursor.fetchone() is None:
+            # Hash 'demopass' securely
+            password_bytes = 'demopass'.encode('utf-8')
+            password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
+            
+            cursor.execute(
+                "INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)",
+                ('DemoUser', 'demo@yesai.com', password_hash, datetime.now())
+            )
+            print("Database: Permanent Demo User Created for Streamlit restarts.")
+            
         conn.commit()
     except sqlite3.Error as e:
         print(f"Database Error during check/creation: {e}")
     finally:
         conn.close()
+
+# Note: The rest of your database.py file (get_db_connection, add_user, clear_history, etc.) 
+# must remain exactly as it was provided in the previous step.
 
 # --- User Management Functions ---
 
