@@ -14,8 +14,6 @@ def get_db_connection():
     return conn
 
 # --- Initialization Function ---
-# database.py - check_db_exists function (Final Version)
-
 def check_db_exists():
     """Checks if the necessary tables exist, creates them, and ensures a demo user exists."""
     conn = get_db_connection()
@@ -49,11 +47,9 @@ def check_db_exists():
                 )
             """)
             
-        # 3. Create Permanent Demo User (The Fix for 'Sleep' Problem)
-        # Only create if the email 'demo@yesai.com' does NOT exist
+        # 3. Create Permanent Demo User (Fix for Streamlit 'Sleep' issue)
         cursor.execute("SELECT id FROM users WHERE email = 'demo@yesai.com'")
         if cursor.fetchone() is None:
-            # Hash 'demopass' securely
             password_bytes = 'demopass'.encode('utf-8')
             password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
             
@@ -61,7 +57,6 @@ def check_db_exists():
                 "INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)",
                 ('DemoUser', 'demo@yesai.com', password_hash, datetime.now())
             )
-            print("Database: Permanent Demo User Created for Streamlit restarts.")
             
         conn.commit()
     except sqlite3.Error as e:
@@ -69,19 +64,15 @@ def check_db_exists():
     finally:
         conn.close()
 
-# Note: The rest of your database.py file (get_db_connection, add_user, clear_history, etc.) 
-# must remain exactly as it was provided in the previous step.
-
 # --- User Management Functions ---
 
 def add_user(username, email, password):
     """Adds a new user to the database."""
-    check_db_exists() # Ensure table exists before inserting
+    check_db_exists()
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         
-        # Hash the password
         password_bytes = password.encode('utf-8')
         password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
         
@@ -179,7 +170,6 @@ def load_history(user_id):
 
 def clear_history(user_id):
     """Deletes all chat messages for a specific user."""
-    # Eitai sei missing function ja app.py call korchilo!
     check_db_exists() 
     try:
         conn = get_db_connection()
@@ -190,4 +180,4 @@ def clear_history(user_id):
         return True
     except Exception as e:
         print(f"Error clearing history: {e}")
-        return Falsev
+        return False
