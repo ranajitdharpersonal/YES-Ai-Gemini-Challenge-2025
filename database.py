@@ -47,15 +47,16 @@ def check_db_exists():
                 )
             """)
             
-        # 3. Create Permanent Demo User (Fix for Streamlit 'Sleep' issue)
-        cursor.execute("SELECT id FROM users WHERE email = 'demo@yesai.com'")
+        # 3. Create YOUR Permanent Demo User (FIXED)
+        cursor.execute("SELECT id FROM users WHERE email = 'yesai.dev@gmail.com'")
         if cursor.fetchone() is None:
-            password_bytes = 'demopass'.encode('utf-8')
+            # Hash 'aidemo123' securely
+            password_bytes = 'aidemo123'.encode('utf-8')
             password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
             
             cursor.execute(
                 "INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)",
-                ('DemoUser', 'demo@yesai.com', password_hash, datetime.now())
+                ('DemoUser', 'yesai.dev@gmail.com', password_hash, datetime.now())
             )
             
         conn.commit()
@@ -64,22 +65,22 @@ def check_db_exists():
     finally:
         conn.close()
 
-# --- User Management Functions ---
+# (Rest of the User Management and Chat History functions are the same as before)
+
+def get_db_connection():
+    conn = sqlite3.connect(DATABASE_NAME)
+    conn.row_factory = sqlite3.Row
+    return conn
 
 def add_user(username, email, password):
-    """Adds a new user to the database."""
     check_db_exists()
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
         password_bytes = password.encode('utf-8')
         password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
-        
-        cursor.execute(
-            "INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)",
-            (username, email, password_hash, datetime.now())
-        )
+        cursor.execute("INSERT INTO users (username, email, password_hash, created_at) VALUES (?, ?, ?, ?)",
+            (username, email, password_hash, datetime.now()))
         conn.commit()
         conn.close()
         return True
@@ -92,7 +93,6 @@ def add_user(username, email, password):
         return False
 
 def check_email_exists(email):
-    """Checks if an email is already registered."""
     check_db_exists()
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -102,36 +102,28 @@ def check_email_exists(email):
     return user is not None
 
 def check_user(email, password):
-    """Checks user credentials for login."""
     check_db_exists()
     conn = get_db_connection()
     cursor = conn.cursor()
-    
     cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
     user = cursor.fetchone()
     conn.close()
-    
     if user:
         password_hash = user['password_hash'].encode('utf-8')
         if bcrypt.checkpw(password.encode('utf-8'), password_hash):
             return user
-    
     return None
 
 def update_password(email, new_password):
-    """Updates the user's password."""
     check_db_exists()
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
-        
         password_bytes = new_password.encode('utf-8')
         password_hash = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode('utf-8')
-        
         cursor.execute(
             "UPDATE users SET password_hash = ?, created_at = ? WHERE email = ?",
-            (password_hash, datetime.now(), email)
-        )
+            (password_hash, datetime.now(), email))
         conn.commit()
         conn.close()
         return True
@@ -139,18 +131,14 @@ def update_password(email, new_password):
         print(f"Error updating password: {e}")
         return False
 
-# --- Chat History Functions (FULL IMPLEMENTATION) ---
-
 def save_message(user_id, role, content):
-    """Saves a message to the chat history."""
     check_db_exists() 
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
         cursor.execute(
             "INSERT INTO chat_history (user_id, role, content, timestamp) VALUES (?, ?, ?, ?)",
-            (user_id, role, content, datetime.now())
-        )
+            (user_id, role, content, datetime.now()))
         conn.commit()
         conn.close()
         return True
@@ -159,7 +147,6 @@ def save_message(user_id, role, content):
         return False
 
 def load_history(user_id):
-    """Loads all chat messages for a specific user."""
     check_db_exists() 
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -169,7 +156,6 @@ def load_history(user_id):
     return history
 
 def clear_history(user_id):
-    """Deletes all chat messages for a specific user."""
     check_db_exists() 
     try:
         conn = get_db_connection()
