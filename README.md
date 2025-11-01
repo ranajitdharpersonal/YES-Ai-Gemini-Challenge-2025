@@ -1,4 +1,4 @@
-🚀 YES Ai: Multi-Talented Agent for Chrome AI Challenge 2025
+🤖 YES Ai: Multi-Talented Agent for Chrome AI Challenge 2025
 YES Ai is a powerful, secure, multi-tool AI assistant built to demonstrate the capabilities of **Google's Gemini API** for the **Chrome Built-in AI Challenge 2025**. It offers a unified chat experience, integrating real-time tools for search, weather, math, and more.
 
 ## 🌟 Core Features
