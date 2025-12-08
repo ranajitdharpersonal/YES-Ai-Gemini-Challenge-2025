@@ -39,23 +39,3 @@ Our agent combines multiple tools to deliver smart, accurate, and multi-lingual 
 | :--- | :--- |
 | **Live Demo URL** | https://yesai-ranajitdhar.streamlit.app |
 | **GitHub Repository** | https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git |
-
-### 💻 Local Setup Instructions
-
-1.  **Clone the repository:**
-    ```bash
-    git clone [https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git](https://github.com/ranajitdharpersonal/YES-Ai-Gemini-Challenge-2025.git)
-    cd YES-Ai-Gemini-Challenge-2025
-    ```
-
-2.  **Install dependencies:**
-    ```bash
-    pip install -r requirements.txt
-    ```
-
-3.  **Set up Secrets:** Create a `secrets.toml` file with all necessary API keys (GEMINI_API_KEY, OPENWEATHER_API_KEY, etc.).
-
-4.  **Run the app:**
-    ```bash
-    streamlit run app.py
-    ```
